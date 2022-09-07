@@ -56,9 +56,6 @@ public class Scanner {
 						throw new RuntimeException("Lexical Error: Unrecognized symbol");
 					}
 					else {
-						// if(!isEOF()) {
-						// 	back();
-						// }
 						tk = new Token(TokenType.IDENTIFIER, content);
 						return tk;
 					}
@@ -68,9 +65,6 @@ public class Scanner {
 						content += currentChar;
 					}
 					else if(isOperator(currentChar) || isSpace(currentChar) || isAssign(currentChar) || isEOF()) {
-						// if(!isEOF()) {
-						// 	back();
-						// }
 						tk = new Token(TokenType.NUMBER, content);
 						return tk;
 					}
