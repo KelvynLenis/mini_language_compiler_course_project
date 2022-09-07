@@ -1,0 +1,10 @@
+TOKENS:
+	IDENTIFICADOR
+		(a-z | A-Z)(a-z | A-Z | 0-9)*
+	NUMERO INTEIRO
+		(0-9)+
+	ATRIBUICAO
+		=
+	OPERADORES
+		> | >= | < | <= | != | ==
+		
