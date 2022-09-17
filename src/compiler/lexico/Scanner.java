@@ -55,6 +55,10 @@ public class Scanner {
 						content += currentChar;
 						state = 2;
 					}
+					else if(currentChar == '.'){
+						content += "0.";
+						state = 4;
+					}
 					else if(isCommentary(currentChar)){
 						state = 3;
 					}
@@ -85,10 +89,12 @@ public class Scanner {
 					else if(isCloseParanthesis(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
 						back();
+						column--;
 						return tk;	
 					}
 					else if(isOpenParanthesis(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
+						column--;
 						back();
 						return tk;	
 					}
@@ -141,6 +147,10 @@ public class Scanner {
 					if(isNumber(currentChar)) {
 						content += currentChar;
 					}
+					else if(currentChar == '.'){
+						content += currentChar;
+						state = 4;
+					}
 					else if(isCommentary(currentChar)){
 						tk = new Token(TokenType.NUMBER, content);
 						state = 3;
@@ -165,6 +175,36 @@ public class Scanner {
 						state = 0;
 						tk = new Token(TokenType.COMMENTARY, content);
 						return tk;
+					}
+					break;
+				case 4:
+					if(!isNewLine(currentChar)){
+						column++;
+					}
+
+					if(isNumber(currentChar)) {
+						content += currentChar;
+					}
+					else if(isCommentary(currentChar)){
+						tk = new Token(TokenType.FLOAT, content);
+						state = 3;
+						back();
+						return tk;	
+					}
+					else if(isEOF() && currentChar != '\0'){
+						if(isLastCharInvalid(currentChar)){
+							throw new RuntimeException("Lexical Error: Unrecognized symbol at at row " + row + " colum " + column);
+						}
+					}
+					else if(isOperator(currentChar) || isSpace(currentChar) || isAssign(currentChar) || isEOF()) {
+						if(content.endsWith(".")){
+							content += "0";
+						}
+						tk = new Token(TokenType.FLOAT, content);
+						return tk;
+					}
+					else {
+						throw new RuntimeException("Malformed Number at row " + row + " colum " + column);
 					}
 					break;
 			}
