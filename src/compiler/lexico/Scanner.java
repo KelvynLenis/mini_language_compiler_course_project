@@ -47,7 +47,7 @@ public class Scanner {
 			switch (state) {
 				case 0:
 					column++;
-					if(isLetter(currentChar)) {
+					if(isLetter(currentChar) || isUnderscore(currentChar)) {
 						content += currentChar;
 						state = 1;
 					}
@@ -74,8 +74,27 @@ public class Scanner {
 						tk = new Token(TokenType.CLOSE_PARENTHESIS, content);
 						return tk;
 					}
+					else if (isSpace(currentChar)){
+						if (isNewLine(currentChar))
+							row--;
+						break;
+					}
+					else if(isMathOperator(currentChar)){
+						content += currentChar;
+						tk = new Token(TokenType.MATH, content);
+						return tk;
+					}
+					else if(isAssign(currentChar)){
+						content += currentChar;
+						tk = new Token(TokenType.ASSIGN, content);
+						return tk;
+					}
+					else if(isOperator(currentChar)){
+						content += currentChar;
+						state = 5;
+					}
 					else {
-						throw new RuntimeException("Unrecognized Symbol at row " + row + " colum " + column);
+						throw new RuntimeException("Unrecognized Symbol at row " + row + " column " + column);
 					}
 					break;
 				case 1:
@@ -83,18 +102,23 @@ public class Scanner {
 						column++;
 					}
 
-					if(isLetter(currentChar) || isNumber(currentChar)) {
+					if(isLetter(currentChar) || isNumber(currentChar) || isUnderscore(currentChar)) {
 						content += currentChar;
+					}
+					else if (isMathOperator(currentChar)){
+						tk = new Token(TokenType.IDENTIFIER, content);
+						back();
+						return tk;	
 					}
 					else if(isCloseParanthesis(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
 						back();
-						column--;
+						// column--;
 						return tk;	
 					}
 					else if(isOpenParanthesis(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
-						column--;
+						// column--;
 						back();
 						return tk;	
 					}
@@ -104,9 +128,19 @@ public class Scanner {
 						back();
 						return tk;	
 					}
+					else if((isSpace(currentChar) || isAssign(currentChar) || isOperator(currentChar)) && currentChar != '\n'){
+						if(isReservedWord(content)){
+							tk = new Token(TokenType.RESERVED_WORD, content);
+							return tk;	
+						}
+						
+						tk = new Token(TokenType.IDENTIFIER, content);
+						back();
+						return tk;
+					}	
 					else if(isLastChar(currentChar)){
 						if(isLastCharInvalid(currentChar)){
-							throw new RuntimeException("Lexical Error: Unrecognized symbol at at row " + row + " colum " + column);
+							throw new RuntimeException("Lexical Error: Unrecognized symbol at at row " + row + " column " + column);
 						}
 						else if(isReservedWord(content)){
 							tk = new Token(TokenType.RESERVED_WORD, content);
@@ -127,7 +161,7 @@ public class Scanner {
 						return tk;
 					}
 					else if(isCurrentCharInvalid) {
-						throw new RuntimeException("Lexical Error: Unrecognized symbol at at row " + row + " colum " + column);
+						throw new RuntimeException("Lexical Error: Unrecognized symbol at at row " + row + " column " + column);
 					}
 					else {
 						if(isReservedWord(content)){
@@ -151,27 +185,50 @@ public class Scanner {
 						content += currentChar;
 						state = 4;
 					}
+					else if (isMathOperator(currentChar)){
+						tk = new Token(TokenType.NUMBER, content);
+						back();
+						return tk;	
+					}
 					else if(isCommentary(currentChar)){
 						tk = new Token(TokenType.NUMBER, content);
 						state = 3;
 						back();
 						return tk;	
 					}
+					else if(isOperator(currentChar)){
+						tk = new Token(TokenType.NUMBER, content);
+						back();
+						state = 5;
+						return tk;
+					}
+					else if(isAssign(currentChar)){
+						tk = new Token(TokenType.NUMBER, content);
+						back();
+						state = 0;
+						return tk;
+					}
+					else if(isSpace(currentChar)) {
+						tk = new Token(TokenType.NUMBER, content);
+						back();
+						state = 0;
+						return tk;
+					}
 					else if(isEOF() && currentChar != '\0'){
 						if(isLastCharInvalid(currentChar)){
-							throw new RuntimeException("Lexical Error: Unrecognized symbol at at row " + row + " colum " + column);
+							throw new RuntimeException("Lexical Error: Unrecognized symbol at at row " + row + " column " + column);
 						}
 					}
-					else if(isOperator(currentChar) || isSpace(currentChar) || isAssign(currentChar) || isEOF()) {
+					else if(isEOF()){
 						tk = new Token(TokenType.NUMBER, content);
 						return tk;
 					}
 					else {
-						throw new RuntimeException("Malformed Number at row " + row + " colum " + column);
+						throw new RuntimeException("Malformed Number at row " + row + " column " + column);
 					}
 					break;
 				case 3:
-					if(isNewLine(currentChar)){
+					if(isNewLine(currentChar) || currentChar == '\0'){
 						state = 0;
 						tk = new Token(TokenType.COMMENTARY, content);
 						return tk;
@@ -185,6 +242,15 @@ public class Scanner {
 					if(isNumber(currentChar)) {
 						content += currentChar;
 					}
+					else if(isLetter(currentChar)){
+						throw new RuntimeException("Malformed Number at row " + row + " column " + column);
+					}
+					else if (isMathOperator(currentChar)){
+						content += "0";
+						tk = new Token(TokenType.IDENTIFIER, content);
+						back();
+						return tk;	
+					}
 					else if(isCommentary(currentChar)){
 						tk = new Token(TokenType.FLOAT, content);
 						state = 3;
@@ -193,7 +259,7 @@ public class Scanner {
 					}
 					else if(isEOF() && currentChar != '\0'){
 						if(isLastCharInvalid(currentChar)){
-							throw new RuntimeException("Lexical Error: Unrecognized symbol at at row " + row + " colum " + column);
+							throw new RuntimeException("Lexical Error: Unrecognized symbol at at row " + row + " column " + column);
 						}
 					}
 					else if(isOperator(currentChar) || isSpace(currentChar) || isAssign(currentChar) || isEOF()) {
@@ -204,14 +270,44 @@ public class Scanner {
 						return tk;
 					}
 					else {
-						throw new RuntimeException("Malformed Number at row " + row + " colum " + column);
+						throw new RuntimeException("Malformed Number at row " + row + " column " + column);
 					}
 					break;
+				case 5:
+					if(!isNewLine(currentChar)){
+						column++;
+					}	
+
+					if (isAssign(currentChar)){
+						content += currentChar;
+						tk = new Token(TokenType.RELATIONAL, content);
+						// state = 0;
+						return tk;
+					}
+					else if(isCommentary(currentChar)){
+						tk = new Token(TokenType.RELATIONAL, content);
+						state = 3;
+						back();
+						return tk;	
+					}
+					else if(isLetter(currentChar) || isNumber(currentChar) || isSpace(currentChar) || 
+							isOperator(currentChar) || isOpenParanthesis(currentChar) || isCloseParanthesis(currentChar) || 
+							isUnderscore(currentChar) || isMathOperator(currentChar) || isEOF() || currentChar == '.'){
+						tk = new Token(TokenType.RELATIONAL, content);
+						back();
+						// state = 0;
+						return tk;
+					}
+					else{
+						throw new RuntimeException("Lexical Error: Unrecognized symbol at at row " + row + " column " + column);
+					}
+					// break;
 			}
 		}
 	}
 	
 	private void back() {
+		this.column--;
 		this.pos--;
 		
 	}
@@ -219,11 +315,13 @@ public class Scanner {
 	private boolean isInvalid(char c) {
 		return !isLetter(c) && !isNumber(c) && !isSpace(c) && !isAssign(c) && 
 					!isOperator(c) && !isEOF() && !isOpenParanthesis(c) && 
-					!isCloseParanthesis(c) && !isCommentary(c);
+					!isCloseParanthesis(c) && !isCommentary(c) && !isUnderscore(c) && !isMathOperator(c);
 	}
 
 	private boolean isLastCharInvalid(char c){
-		return !isLetter(c) && !isNumber(c) && !isSpace(c) && !isAssign(c) && !isOperator(c) && !isOpenParanthesis(c) && !isCloseParanthesis(c);
+		return !isLetter(c) && !isNumber(c) && !isSpace(c) && !isAssign(c) && 
+					!isOperator(c) && !isOpenParanthesis(c) && !isCloseParanthesis(c) && 
+					!isUnderscore(c) && !isMathOperator(c);
 
 	}
 
@@ -239,6 +337,12 @@ public class Scanner {
 	}
 	private boolean isLetter(char c) {
 		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+	}
+	private boolean isUnderscore(char c){
+		return c == '_';
+	}
+	private boolean isMathOperator(char c){
+		return c == '+' || c == '-' || c == '*' || c == '/';
 	}
 	private boolean isNumber(char c) {
 		return c >= '0' && c <= '9';
