@@ -206,8 +206,16 @@ public class Scanner {
 							throw new RuntimeException("Lexical Error: Unrecognized symbol at at row " + row + " colum " + column);
 						}
 					}
-					else if(isOperator(currentChar) || isSpace(currentChar) || isAssign(currentChar) || isEOF()) {
+					else if(isOperator(currentChar)){
 						tk = new Token(TokenType.NUMBER, content);
+						back();
+						state = 5;
+						return tk;
+					}
+					else if(isSpace(currentChar) || isAssign(currentChar) || isEOF()) {
+						tk = new Token(TokenType.NUMBER, content);
+						back();
+						state = 0;
 						return tk;
 					}
 					else {
