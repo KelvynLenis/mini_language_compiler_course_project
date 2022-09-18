@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import javax.management.RuntimeErrorException;
+
 import utils.TokenType;
 
 public class Scanner {
@@ -118,13 +120,14 @@ public class Scanner {
 					else if(isOpenParanthesis(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
 						back();
+						state = 0;
 						return tk;	
 					}
 					else if(isCommentary(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
 						state = 3;
 						back();
-						return tk;	
+						return tk;
 					}
 					else if((isSpace(currentChar) || isAssign(currentChar) || isOperator(currentChar)) && currentChar != '\n'){
 						if(isReservedWord(content)){
@@ -142,20 +145,24 @@ public class Scanner {
 						}
 						else if(isReservedWord(content)){
 							tk = new Token(TokenType.RESERVED_WORD, content);
+							state = 0;
 							return tk;	
 						}
 						else if(isCloseParanthesis(currentChar)){
 							tk = new Token(TokenType.IDENTIFIER, content);
 							back();
+							state = 0;
 							return tk;	
 						}
 						else if(isOpenParanthesis(currentChar)){
 							tk = new Token(TokenType.IDENTIFIER, content);
 							back();
+							state = 0;
 							return tk;	
 						}
 						
 						tk = new Token(TokenType.IDENTIFIER, content);
+						state = 0;
 						return tk;
 					}
 					else if(isCurrentCharInvalid) {
@@ -219,6 +226,7 @@ public class Scanner {
 					}
 					else if(isEOF()){
 						tk = new Token(TokenType.NUMBER, content);
+						state = 0;
 						return tk;
 					}
 					else {
@@ -250,6 +258,7 @@ public class Scanner {
 						return tk;	
 					}
 					else if(isCommentary(currentChar)){
+						//content += "0"
 						tk = new Token(TokenType.FLOAT, content);
 						state = 3;
 						back();
