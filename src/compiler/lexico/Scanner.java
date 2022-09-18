@@ -108,6 +108,12 @@ public class Scanner {
 					if(isLetter(currentChar) || isNumber(currentChar) || isUnderscore(currentChar)) {
 						content += currentChar;
 					}
+					else if (isMathOperator(currentChar)){
+						tk = new Token(TokenType.IDENTIFIER, content);
+						back();
+						state = 0;
+						return tk;	
+					}
 					else if(isCloseParanthesis(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
 						back();
@@ -183,6 +189,12 @@ public class Scanner {
 						content += currentChar;
 						state = 4;
 					}
+					else if (isMathOperator(currentChar)){
+						tk = new Token(TokenType.IDENTIFIER, content);
+						back();
+						state = 0;
+						return tk;	
+					}
 					else if(isCommentary(currentChar)){
 						tk = new Token(TokenType.NUMBER, content);
 						state = 3;
@@ -217,7 +229,15 @@ public class Scanner {
 					if(isNumber(currentChar)) {
 						content += currentChar;
 					}
+					else if (isMathOperator(currentChar)){
+						content += "0";
+						tk = new Token(TokenType.IDENTIFIER, content);
+						back();
+						state = 0;
+						return tk;	
+					}
 					else if(isCommentary(currentChar)){
+						//content += "0"
 						tk = new Token(TokenType.FLOAT, content);
 						state = 3;
 						back();
