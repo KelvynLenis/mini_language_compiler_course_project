@@ -113,12 +113,10 @@ public class Scanner {
 					else if(isCloseParanthesis(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
 						back();
-						// column--;
 						return tk;	
 					}
 					else if(isOpenParanthesis(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
-						// column--;
 						back();
 						return tk;	
 					}
@@ -281,7 +279,6 @@ public class Scanner {
 					if (isAssign(currentChar)){
 						content += currentChar;
 						tk = new Token(TokenType.RELATIONAL, content);
-						// state = 0;
 						return tk;
 					}
 					else if(isCommentary(currentChar)){
@@ -295,7 +292,6 @@ public class Scanner {
 							isUnderscore(currentChar) || isMathOperator(currentChar) || isEOF() || currentChar == '.'){
 						tk = new Token(TokenType.RELATIONAL, content);
 						back();
-						// state = 0;
 						return tk;
 					}
 					else{
@@ -356,15 +352,12 @@ public class Scanner {
 	private boolean isSpace(char c) {
 		return c == ' ' || c == '\n' || c == '\t' || c == '\r';
 	}
-	// 5) a.
 	private boolean isOpenParanthesis(char c){
 		return c == '(';
 	}
-	// 5) b.
 	private boolean isCloseParanthesis(char c){
 		return c == ')';
 	}
-	// 7) a)-e)
 	private boolean isReservedWord(String generatedToken){
 		return generatedToken.equals("int") || generatedToken.equals("float") || generatedToken.equals("print") || generatedToken.equals("if") || generatedToken.equals("else");
 	}
