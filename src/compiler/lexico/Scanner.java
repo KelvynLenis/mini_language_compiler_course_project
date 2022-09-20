@@ -9,7 +9,7 @@ import utils.TokenType;
 
 public class Scanner {
 	
-	private int state;
+	private String state;
 	private int row = 1, column = 0;
 	private int pos;
 	private char[] contentBuffer;
@@ -27,7 +27,7 @@ public class Scanner {
 	public Token nextToken() {
 		Token tk;
 		String content = "";
-		this.state = 0;
+		this.state = "base";
 		char currentChar;
 
 		if(isEOF()) {
@@ -45,22 +45,22 @@ public class Scanner {
 			}
 
 			switch (state) {
-				case 0:
+				case "base":
 					column++;
 					if(isLetter(currentChar) || isUnderscore(currentChar)) {
 						content += currentChar;
-						state = 1;
+						state = "identifier";
 					}
 					else if (isNumber(currentChar)) {
 						content += currentChar;
-						state = 2;
+						state = "number";
 					}
 					else if(currentChar == '.'){
 						content += "0.";
-						state = 4;
+						state = "float";
 					}
 					else if(isCommentary(currentChar)){
-						state = 3;
+						state = "commentary";
 					}
 					else if (isOpenParanthesis(currentChar)){
 						content += currentChar;
@@ -91,13 +91,13 @@ public class Scanner {
 					}
 					else if(isOperator(currentChar)){
 						content += currentChar;
-						state = 5;
+						state = "relational";
 					}
 					else {
 						throw new RuntimeException("Unrecognized Symbol at row " + row + " column " + column);
 					}
 					break;
-				case 1:
+				case "identifier":
 					if(!isNewLine(currentChar)){
 						column++;
 					}
@@ -113,18 +113,16 @@ public class Scanner {
 					else if(isCloseParanthesis(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
 						back();
-						// column--;
 						return tk;	
 					}
 					else if(isOpenParanthesis(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
-						// column--;
 						back();
 						return tk;	
 					}
 					else if(isCommentary(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
-						state = 3;
+						state = "commentary";
 						back();
 						return tk;	
 					}
@@ -173,7 +171,7 @@ public class Scanner {
 						return tk;
 					}
 					break;
-				case 2:
+				case "number":
 					if(!isNewLine(currentChar)){
 						column++;
 					}
@@ -183,7 +181,7 @@ public class Scanner {
 					}
 					else if(currentChar == '.'){
 						content += currentChar;
-						state = 4;
+						state = "float";
 					}
 					else if (isMathOperator(currentChar)){
 						tk = new Token(TokenType.NUMBER, content);
@@ -192,26 +190,26 @@ public class Scanner {
 					}
 					else if(isCommentary(currentChar)){
 						tk = new Token(TokenType.NUMBER, content);
-						state = 3;
+						state = "commentary";
 						back();
 						return tk;	
 					}
 					else if(isOperator(currentChar)){
 						tk = new Token(TokenType.NUMBER, content);
 						back();
-						state = 5;
+						state = "relational";
 						return tk;
 					}
 					else if(isAssign(currentChar)){
 						tk = new Token(TokenType.NUMBER, content);
 						back();
-						state = 0;
+						state = "base";
 						return tk;
 					}
 					else if(isSpace(currentChar)) {
 						tk = new Token(TokenType.NUMBER, content);
 						back();
-						state = 0;
+						state = "base";
 						return tk;
 					}
 					else if(isEOF() && currentChar != '\0'){
@@ -227,14 +225,14 @@ public class Scanner {
 						throw new RuntimeException("Malformed Number at row " + row + " column " + column);
 					}
 					break;
-				case 3:
+				case "commentary":
 					if(isNewLine(currentChar) || currentChar == '\0'){
-						state = 0;
+						state = "base";
 						tk = new Token(TokenType.COMMENTARY, content);
 						return tk;
 					}
 					break;
-				case 4:
+				case "float":
 					if(!isNewLine(currentChar)){
 						column++;
 					}
@@ -253,7 +251,7 @@ public class Scanner {
 					}
 					else if(isCommentary(currentChar)){
 						tk = new Token(TokenType.FLOAT, content);
-						state = 3;
+						state = "commentary";
 						back();
 						return tk;	
 					}
@@ -273,7 +271,7 @@ public class Scanner {
 						throw new RuntimeException("Malformed Number at row " + row + " column " + column);
 					}
 					break;
-				case 5:
+				case "relational":
 					if(!isNewLine(currentChar)){
 						column++;
 					}	
@@ -281,12 +279,11 @@ public class Scanner {
 					if (isAssign(currentChar)){
 						content += currentChar;
 						tk = new Token(TokenType.RELATIONAL, content);
-						// state = 0;
 						return tk;
 					}
 					else if(isCommentary(currentChar)){
 						tk = new Token(TokenType.RELATIONAL, content);
-						state = 3;
+						state = "commentary";
 						back();
 						return tk;	
 					}
@@ -295,13 +292,11 @@ public class Scanner {
 							isUnderscore(currentChar) || isMathOperator(currentChar) || isEOF() || currentChar == '.'){
 						tk = new Token(TokenType.RELATIONAL, content);
 						back();
-						// state = 0;
 						return tk;
 					}
 					else{
 						throw new RuntimeException("Lexical Error: Unrecognized symbol at at row " + row + " column " + column);
 					}
-					// break;
 			}
 		}
 	}
@@ -356,15 +351,12 @@ public class Scanner {
 	private boolean isSpace(char c) {
 		return c == ' ' || c == '\n' || c == '\t' || c == '\r';
 	}
-	// 5) a.
 	private boolean isOpenParanthesis(char c){
 		return c == '(';
 	}
-	// 5) b.
 	private boolean isCloseParanthesis(char c){
 		return c == ')';
 	}
-	// 7) a)-e)
 	private boolean isReservedWord(String generatedToken){
 		return generatedToken.equals("int") || generatedToken.equals("float") || generatedToken.equals("print") || generatedToken.equals("if") || generatedToken.equals("else");
 	}
