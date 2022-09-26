@@ -1,5 +1,9 @@
 # mini_language_compiler_course_project
 
+## Integrantes:
+- Kelvyn Lenis Martins
+- Rogério Marinho
+
 Esse projeto foi feito usando a versão openjdk version "17.0.1" 2021-10-19, quaisquer problemas
 de compilação e execução pode ser devido a diferença de versão.
 

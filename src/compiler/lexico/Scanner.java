@@ -245,7 +245,7 @@ public class Scanner {
 					}
 					else if (isMathOperator(currentChar)){
 						content += "0";
-						tk = new Token(TokenType.IDENTIFIER, content);
+						tk = new Token(TokenType.FLOAT, content);
 						back();
 						return tk;	
 					}
@@ -291,7 +291,6 @@ public class Scanner {
 							isOperator(currentChar) || isOpenParanthesis(currentChar) || isCloseParanthesis(currentChar) || 
 							isUnderscore(currentChar) || isMathOperator(currentChar) || isEOF() || currentChar == '.'){
 						tk = new Token(TokenType.RELATIONAL, content);
-						back();
 						return tk;
 					}
 					else{
