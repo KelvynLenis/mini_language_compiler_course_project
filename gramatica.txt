@@ -1,10 +1,10 @@
 programa : 
-	':' 'DECLARACOES' listaDeclaracoes -----------> 'begin' 'DECLARACOES' listaDeclaracoes
-	':' 'ALGORITMO' listaComandos;			'do' 'ALGORITMO' listaComandos 'end'
+	'begin' 'DECLARACOES' listaDeclaracoes
+	'do' 'ALGORITMO' listaComandos 'end'
 listaDeclaracoes : 
 	declaracao listaDeclaracoes | declaracao;
 declaracao : 
-	VARIAVEL ':' tipoVar;		   -----------> tipoVar VARIAVEL;
+	tipoVar VARIAVEL;
 tipoVar : 
 	'INTEIRO' | 'REAL';
 expressaoAritmetica : 
@@ -37,7 +37,7 @@ termoRelacional :
 	expressaoAritmetica OP_REL expressaoAritmetica |
 	'(' expressaoRelacional ')';
 operadorBooleano : 
-	'E' | 'OU';			-----------> 'AND' | 'OR';
+	'AND' | 'OR';
 listaComandos : 
 	comando listaComandos | comando;
 comando : 

@@ -1,8 +1,8 @@
 package compiler.syntax;
 
 import compiler.exceptions.SyntaxException;
-import compiler.lexical.Scanner;
-import compiler.lexical.Token;
+import compiler.lexico.Scanner;
+import compiler.lexico.Token;
 import utils.TokenType;
 
 public class Parser {
@@ -38,7 +38,7 @@ public class Parser {
 	}
 	
 	private void OP() {
-		if(token.getType() != TokenType.OPERATOR) {
+		if(token.getType() != TokenType.MATH) {
 			throw new SyntaxException("Operator expected, found "+token.getType()+" ("+token.getContent()+") at LINE "+
 					token.getLine()+" and COLUMN "+ token.getColumn());
 		}
