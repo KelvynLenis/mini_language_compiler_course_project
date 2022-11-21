@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import utils.TokenType;
+import utils.ReservedWordsType;
 
 public class Scanner {
 	
@@ -357,7 +358,13 @@ public class Scanner {
 		return c == ')';
 	}
 	private boolean isReservedWord(String generatedToken){
-		return generatedToken.equals("int") || generatedToken.equals("float") || generatedToken.equals("print") || generatedToken.equals("if") || generatedToken.equals("else");
+		ReservedWordsType reservedWordsTypes = new ReservedWordsType();
+		return reservedWordsTypes.hasToken(generatedToken);
+		// return generatedToken.equals("int") || 
+		// 			generatedToken.equals("float") || 
+		// 			generatedToken.equals("print") || 
+		// 			generatedToken.equals("if") || 
+		// 			generatedToken.equals("else");
 	}
 	private boolean isCommentary(char c){
 		return c == '#';

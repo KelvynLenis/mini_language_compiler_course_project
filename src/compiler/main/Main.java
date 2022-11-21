@@ -13,7 +13,7 @@ public class Main {
 			Scanner scanner = new Scanner("source_code.mc");
 			Parser parser = new Parser(scanner);
 	
-			parser.E();
+			parser.PROGRAMA();
 			System.out.println("Compilation Successful!");
 
 		}catch (LexicalException err) {
