@@ -14,6 +14,7 @@ public class Scanner {
 	private int row = 1, column = 0;
 	private int pos;
 	private char[] contentBuffer;
+	private boolean debug_mode = false;
 	
 	public Scanner(String filename) {
 		try {
@@ -56,6 +57,14 @@ public class Scanner {
 						content += currentChar;
 						state = "number";
 					}
+					else if(isBreakLine(currentChar)){
+						content += currentChar;
+						tk = new Token(TokenType.BREAK_LINE, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
+						return tk;
+					}
 					else if(currentChar == '.'){
 						content += "0.";
 						state = "float";
@@ -67,12 +76,18 @@ public class Scanner {
 						content += currentChar;
 
 						tk = new Token(TokenType.OPEN_PARENTHESIS, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}
 					else if (isCloseParanthesis(currentChar)){
 						content += currentChar;
 						
 						tk = new Token(TokenType.CLOSE_PARENTHESIS, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}
 					else if (isSpace(currentChar)){
@@ -83,11 +98,17 @@ public class Scanner {
 					else if(isMathOperator(currentChar)){
 						content += currentChar;
 						tk = new Token(TokenType.MATH, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}
 					else if(isAssign(currentChar)){
 						content += currentChar;
 						tk = new Token(TokenType.ASSIGN, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}
 					else if(isOperator(currentChar)){
@@ -106,35 +127,62 @@ public class Scanner {
 					if(isLetter(currentChar) || isNumber(currentChar) || isUnderscore(currentChar)) {
 						content += currentChar;
 					}
+					else if(isBreakLine(currentChar)){
+						content += currentChar;
+						tk = new Token(TokenType.IDENTIFIER, content);
+						back();
+						if(debug_mode) {
+							System.out.println(tk);
+						}
+						return tk;
+					}
 					else if (isMathOperator(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
 						back();
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;	
 					}
 					else if(isCloseParanthesis(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
 						back();
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;	
 					}
 					else if(isOpenParanthesis(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
 						back();
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;	
 					}
 					else if(isCommentary(currentChar)){
 						tk = new Token(TokenType.IDENTIFIER, content);
 						state = "commentary";
 						back();
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;	
 					}
 					else if((isSpace(currentChar) || isAssign(currentChar) || isOperator(currentChar)) && currentChar != '\n'){
 						if(isReservedWord(content)){
 							tk = new Token(TokenType.RESERVED_WORD, content);
+							if(debug_mode) {
+								System.out.println(tk);
+							}
 							return tk;	
 						}
 						
 						tk = new Token(TokenType.IDENTIFIER, content);
 						back();
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}	
 					else if(isLastChar(currentChar)){
@@ -143,20 +191,32 @@ public class Scanner {
 						}
 						else if(isReservedWord(content)){
 							tk = new Token(TokenType.RESERVED_WORD, content);
+							if(debug_mode) {
+								System.out.println(tk);
+							}
 							return tk;	
 						}
 						else if(isCloseParanthesis(currentChar)){
 							tk = new Token(TokenType.IDENTIFIER, content);
 							back();
+							if(debug_mode) {
+								System.out.println(tk);
+							}
 							return tk;	
 						}
 						else if(isOpenParanthesis(currentChar)){
 							tk = new Token(TokenType.IDENTIFIER, content);
 							back();
+							if(debug_mode) {
+								System.out.println(tk);
+							}
 							return tk;	
 						}
 						
 						tk = new Token(TokenType.IDENTIFIER, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}
 					else if(isCurrentCharInvalid) {
@@ -165,10 +225,16 @@ public class Scanner {
 					else {
 						if(isReservedWord(content)){
 							tk = new Token(TokenType.RESERVED_WORD, content);
+							if(debug_mode) {
+								System.out.println(tk);
+							}
 							return tk;	
 						}
 
 						tk = new Token(TokenType.IDENTIFIER, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}
 					break;
@@ -184,33 +250,57 @@ public class Scanner {
 						content += currentChar;
 						state = "float";
 					}
+					else if(isBreakLine(currentChar)){
+						content += currentChar;
+						tk = new Token(TokenType.NUMBER, content);
+						back();
+						if(debug_mode) {
+							System.out.println(tk);
+						}
+						return tk;
+					}
 					else if (isMathOperator(currentChar)){
 						tk = new Token(TokenType.NUMBER, content);
 						back();
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;	
 					}
 					else if(isCommentary(currentChar)){
 						tk = new Token(TokenType.NUMBER, content);
 						state = "commentary";
 						back();
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;	
 					}
 					else if(isOperator(currentChar)){
 						tk = new Token(TokenType.NUMBER, content);
 						back();
 						state = "relational";
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}
 					else if(isAssign(currentChar)){
 						tk = new Token(TokenType.NUMBER, content);
 						back();
 						state = "base";
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}
 					else if(isSpace(currentChar)) {
 						tk = new Token(TokenType.NUMBER, content);
 						back();
 						state = "base";
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}
 					else if(isEOF() && currentChar != '\0'){
@@ -220,6 +310,9 @@ public class Scanner {
 					}
 					else if(isEOF()){
 						tk = new Token(TokenType.NUMBER, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}
 					else {
@@ -230,6 +323,9 @@ public class Scanner {
 					if(isNewLine(currentChar) || currentChar == '\0'){
 						state = "base";
 						tk = new Token(TokenType.COMMENTARY, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}
 					break;
@@ -244,16 +340,31 @@ public class Scanner {
 					else if(isLetter(currentChar)){
 						throw new RuntimeException("Malformed Number at row " + row + " column " + column);
 					}
+					else if(isBreakLine(currentChar)){
+						content += currentChar;
+						tk = new Token(TokenType.FLOAT, content);
+						back();
+						if(debug_mode) {
+							System.out.println(tk);
+						}
+						return tk;
+					}
 					else if (isMathOperator(currentChar)){
 						content += "0";
 						tk = new Token(TokenType.FLOAT, content);
 						back();
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;	
 					}
 					else if(isCommentary(currentChar)){
 						tk = new Token(TokenType.FLOAT, content);
 						state = "commentary";
 						back();
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;	
 					}
 					else if(isEOF() && currentChar != '\0'){
@@ -266,6 +377,9 @@ public class Scanner {
 							content += "0";
 						}
 						tk = new Token(TokenType.FLOAT, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}
 					else {
@@ -280,18 +394,36 @@ public class Scanner {
 					if (isAssign(currentChar)){
 						content += currentChar;
 						tk = new Token(TokenType.RELATIONAL, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}
 					else if(isCommentary(currentChar)){
 						tk = new Token(TokenType.RELATIONAL, content);
 						state = "commentary";
 						back();
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;	
+					}
+					else if(isBreakLine(currentChar)){
+						content += currentChar;
+						tk = new Token(TokenType.RELATIONAL, content);
+						back();
+						if(debug_mode) {
+							System.out.println(tk);
+						}
+						return tk;
 					}
 					else if(isLetter(currentChar) || isNumber(currentChar) || isSpace(currentChar) || 
 							isOperator(currentChar) || isOpenParanthesis(currentChar) || isCloseParanthesis(currentChar) || 
 							isUnderscore(currentChar) || isMathOperator(currentChar) || isEOF() || currentChar == '.'){
 						tk = new Token(TokenType.RELATIONAL, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
 						return tk;
 					}
 					else{
@@ -372,6 +504,10 @@ public class Scanner {
 
 	private boolean isNewLine(char c) {
 		return c == '\n' || c == '\r';
+	}
+
+	private boolean isBreakLine(char c){
+		return c == ';';
 	}
 
 	private char nextChar() {

@@ -1,1 +1,4 @@
-x + y / soma + k - 2 + id - w * 10 / a
+begin 
+int a; 
+do 
+end

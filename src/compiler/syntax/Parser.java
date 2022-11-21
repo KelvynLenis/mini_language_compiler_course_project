@@ -20,10 +20,7 @@ public class Parser {
 		if(token.getContent().equals("begin")){
 			this.DECLARACOES();
 			
-			token = scanner.nextToken();
-			if(token.getContent().equals("do")){
-				this.ALGORITMO();
-			}
+			this.ALGORITMO();
 			
 			token = scanner.nextToken();
 			if(!token.getContent().equals("end")){
@@ -38,6 +35,8 @@ public class Parser {
 
 	private void DECLARATION_lIST(){
 		this.DECLARATION();
+		token = scanner.nextToken();
+
 		if(token.getContent().equals("do")){
 			return;
 		}
