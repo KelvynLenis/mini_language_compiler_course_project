@@ -9,7 +9,7 @@ declaracao :
 	tipoVar VARIAVEL;
 tipoVar : 
 	'int' | 'float';
-	
+
 =========================================================================
 
 +++++++++++++++++++++++++ Rogério +++++++++++++++++++++++++++++++++
@@ -51,11 +51,13 @@ operadorBooleano :
 
 listaComandos : 
 	comando listaComandos | comando;
+	
 comando : 
 	comandoAtribuicao | 
 	comandoSaida | 
 	comandoCondicao | 
 	comandoRepeticao;
+
 comandoAtribuicao : 
 	VARIAVEL '=' expressaoAritmetica;
 comandoSaida : 
