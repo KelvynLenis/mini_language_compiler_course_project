@@ -43,6 +43,18 @@ fatorAritmetico :
 expressaoRelacional : 
 	expressaoRelacional operadorBooleano 			termoRelacional | 
 	termoRelacional;
+
+------------------------
+#elimimando recursividade
+
+expressaoRelacional:
+	termoRelacional expressaoRelacional2;
+
+expressaoRelacional2:
+	operadorBooleano termoRelacional expressaoRelacional2 | VAZIO
+
+-------------------------
+
 termoRelacional : 
 	expressaoAritmetica OP_REL expressaoAritmetica |
 	'(' expressaoRelacional ')';
@@ -51,7 +63,7 @@ operadorBooleano :
 
 listaComandos : 
 	comando listaComandos | comando;
-	
+
 comando : 
 	comandoAtribuicao | 
 	comandoSaida | 
