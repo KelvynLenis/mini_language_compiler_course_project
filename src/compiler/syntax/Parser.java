@@ -123,7 +123,7 @@ public class Parser {
 
 	private void RELATIONAL_TERM(){
 		// TODO
-
+		this.ARITHMETIC_EXPRESSION();
 	}
 
 	//////////////////////////////////////
