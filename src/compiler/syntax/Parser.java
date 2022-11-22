@@ -69,8 +69,59 @@ public class Parser {
 	}
 
 	private void ALGORITMO(){
-		
+		this.COMMAND_LIST();
 	}
+
+	private void COMMAND_LIST(){
+		this.COMMAND();
+	}
+
+	private void 	COMMAND(){
+		this.ASSIGN_COMMAND();
+		this.OUTPUT_COMMAND();
+		this.CONDITION_COMMAND();
+		this.LOOP_COMMAND();
+	}
+
+	private void ASSIGN_COMMAND() {
+		// TODO
+		// 'VARIAVEL' =
+		this.ARITHMETIC_EXPRESSION();
+	}
+
+	private void OUTPUT_COMMAND() {
+		// TODO
+		// 'PRINT' (VARIAVEL | CADEIA)
+	}
+
+	private void CONDITION_COMMAND() {
+		// TODO
+		// IF
+		this.RELATIONAL_EXPRESSION();
+		// THEN
+		this.COMMAND();
+		// ELSE
+		this.COMMAND();
+	}
+
+	private void LOOP_COMMAND() {
+		// TODO
+		// WHILE
+		this.RELATIONAL_EXPRESSION();
+		this.COMMAND();
+	}
+
+	private void ARITHMETIC_EXPRESSION() {
+		// TODO
+
+	}
+
+	private void RELATIONAL_EXPRESSION() {
+		// TODO
+
+	}
+
+	//////////////////////////////////////
 	
 	public void E() {
 		this.T();
