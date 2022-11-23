@@ -112,8 +112,8 @@ public class Parser {
 	}
 
 	private void ARITHMETIC_EXPRESSION3(){
-		if(token.getContent() == "+" ||
-		   token.getContent() == "-"){
+		if(token.getContent().equals("+") ||
+		   token.getContent().equals("-")){
 			this.ARITHMETIC_TERM();
 		}
 	}
@@ -156,8 +156,8 @@ public class Parser {
 	private void ARITHMETIC_TERM2(){
 		token = scanner.nextToken();
 		if(token != null) {
-			if(token.getContent() == "*" ||
-			   token.getContent() == "/"){
+			if(token.getContent().equals("*") ||
+			   token.getContent().equals("/")){
 				this.ARITHMETIC_FACTOR();
 				this.ARITHMETIC_TERM2();
 			}
