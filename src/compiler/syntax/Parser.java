@@ -193,8 +193,67 @@ public class Parser {
 		this.COMMAND();
 	}
 
-	private void ARITHMETIC_EXPRESSION() {
-		// TODO
+	private void ARITHMETIC_EXPRESSION3(){
+		if(token.getContent().equals("+") ||
+		   token.getContent().equals("-")){
+			this.ARITHMETIC_TERM();
+		}
+	}
+
+	private void ARITHMETIC_EXPRESSION2(){
+		token = scanner.nextToken();
+		if (token != null){
+			this.ARITHMETIC_EXPRESSION3();
+			this.ARITHMETIC_EXPRESSION2();
+		}
+	}
+
+	private void ARITHMETIC_EXPRESSION(){
+		this.ARITHMETIC_TERM();
+		this.ARITHMETIC_EXPRESSION2();		
+	}
+
+	private void ARITHMETIC_FACTOR(){
+		token = scanner.nextToken();
+		if (token.getType() != TokenType.NUMBER &&
+			token.getType() != TokenType.FLOAT &&
+			token.getType() != TokenType.IDENTIFIER &&
+			token.getType() != TokenType.OPEN_PARENTHESIS){
+				throw new SyntaxException("Identifier or Integer or Float or Open Parenthesis expected, found "+token.getType()+ 
+					" ("+token.getContent()+")  at LINE " +
+					token.getLine()+ " and COLUMN "+ token.getColumn());
+		}
+
+		if (token.getType() == TokenType.OPEN_PARENTHESIS){
+			this.ARITHMETIC_EXPRESSION();
+			token = scanner.nextToken();
+			if (token.getType() != TokenType.CLOSE_PARENTHESIS){
+				throw new SyntaxException("Close parenthesis expected, found "+token.getType()+ 
+					" ("+token.getContent()+")  at LINE " +
+					token.getLine()+ " and COLUMN "+ token.getColumn());
+			}
+		}
+	}
+
+	private void ARITHMETIC_TERM2(){
+		token = scanner.nextToken();
+		if(token != null) {
+			if(token.getContent().equals("*") ||
+			   token.getContent().equals("/")){
+				this.ARITHMETIC_FACTOR();
+				this.ARITHMETIC_TERM2();
+			}
+			else{
+				throw new SyntaxException("* or / expected, found"+token.getType()+ 
+				" ("+token.getContent()+")  at LINE " +
+				token.getLine()+ " and COLUMN "+ token.getColumn());
+			}
+		}
+	}
+
+	private void ARITHMETIC_TERM() {
+		this.ARITHMETIC_FACTOR();
+		this.ARITHMETIC_TERM2();
 	}
 
 	private void RELATIONAL_EXPRESSION() {

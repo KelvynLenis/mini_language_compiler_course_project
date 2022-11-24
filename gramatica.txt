@@ -37,6 +37,21 @@ fatorAritmetico :
 	NUMINT | NUMREAL | VARIAVEL |
 	'(' expressaoAritmetica ')'
 
+--------------------------------------------------
+#Eliminando recursão à esquerda
+
+termoAritmetico : 
+	fatorAritmetico termoAritmetico2
+termoAritmetico2 :
+	'*' fatorAritmetico termoAritmetico2 |
+	'/' fatorAritmetico termoAritmetico2 |
+	VAZIO
+fatorAritmetico :
+	NUMINT | NUMREAL | VARIAVEL |
+	'(' expressaoAritmetica ')'
+
+--------------------------------------------------
+
 +++++++++++++++++++++++++ Rogério +++++++++++++++++++++++++++++++++
 
 =========================================================================
