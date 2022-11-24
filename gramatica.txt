@@ -10,51 +10,19 @@ declaracao :
 tipoVar : 
 	'int' | 'float';
 
-=========================================================================
-
-+++++++++++++++++++++++++ Rogério +++++++++++++++++++++++++++++++++
-expressaoAritmetica : 
-	expressaoAritmetica '+' termoAritmetico |
-	expressaoAritmetica '-' termoAritmetico | 
-	termoAritmetico;
---------------------------------------------------
-#Fatorando à esquerda e eliminando recursividade à esquerda
 expressaoAritmetica:
-	termoAritmetico expressaoAritmetica2;
-expressaoAritmetica2: 
-	expressaoAritmetica3 expressaoAritmetica2 |
+	fatorAritmetico expressaoAritmetica2
+
+expressaoAritmetica2:
+	'+' fatorAritmetico expressaoAritmetica2 |
+	'-' fatorAritmetico expressaoAritmetica2 |
+	'*' fatorAritmetico expressaoAritmetica2 |
+	'/' fatorAritmetico expressaoAritmetica2 |
 	VAZIO
-expressaoAritmetica3:
-	'+' termoAritmetico |
-	'-' termoAritmetico 
---------------------------------------------------
 
-termoAritmetico : 
-	termoAritmetico '*' fatorAritmetico |
-	termoAritmetico '/' fatorAritmetico |
-	fatorAritmetico;
-fatorAritmetico : 
-	NUMINT | NUMREAL | VARIAVEL |
-	'(' expressaoAritmetica ')'
-
---------------------------------------------------
-#Eliminando recursão à esquerda
-
-termoAritmetico : 
-	fatorAritmetico termoAritmetico2
-termoAritmetico2 :
-	'*' fatorAritmetico termoAritmetico2 |
-	'/' fatorAritmetico termoAritmetico2 |
-	VAZIO
 fatorAritmetico :
 	NUMINT | NUMREAL | VARIAVEL |
 	'(' expressaoAritmetica ')'
-
---------------------------------------------------
-
-+++++++++++++++++++++++++ Rogério +++++++++++++++++++++++++++++++++
-
-=========================================================================
 
 listaComandos : 
 	comando listaComandos | comando;
