@@ -128,14 +128,16 @@ public class Parser {
 			token.getType() + " ("+token.getContent()+")  at LINE " +
 			token.getLine() + " and COLUMN "+ token.getColumn());
 		}
+		
+		token = scanner.nextToken();
 		this.ARITHMETIC_EXPRESSION();
 
-		token = scanner.nextToken();
-		if(token.getType() != TokenType.BREAK_LINE){
-			throw new SyntaxException("expected ; at the end of the line, found "+
-			token.getType() + " ("+token.getContent()+")  at LINE " +
-			token.getLine() + " and COLUMN "+ token.getColumn());
-		}
+		// token = scanner.nextToken();
+		// if(token.getType() != TokenType.BREAK_LINE){
+		// 	throw new SyntaxException("expected ; at the end of the line, found "+
+		// 	token.getType() + " ("+token.getContent()+")  at LINE " +
+		// 	token.getLine() + " and COLUMN "+ token.getColumn());
+		// }
 	}
 
 	private void OUTPUT_COMMAND() {
@@ -201,22 +203,20 @@ public class Parser {
 	private void ARITHMETIC_EXPRESSION2(){
 		token = scanner.nextToken();
 
-		if (token.getContent().equals(";") ||
-			token.getContent().equals(")"))
+		if (!token.getContent().equals(";") ||
+			!token.getContent().equals(")"))
 			return;
 
-		if (token.getContent().equals("*") ||
-			token.getContent().equals("/") ||
-			token.getContent().equals("+") ||
-			token.getContent().equals("-")){
+		if (token.getType() == TokenType.MATH){
 			
 			this.ARITHMETIC_FACTOR();
 			this.ARITHMETIC_EXPRESSION2();
-			}	
+		}	
 	}
 
 	private void ARITHMETIC_FACTOR(){
-		token = scanner.nextToken();
+		// token = scanner.nextToken();
+
 		if (token.getType() != TokenType.NUMBER &&
 			token.getType() != TokenType.FLOAT &&
 			token.getType() != TokenType.IDENTIFIER &&
@@ -244,7 +244,7 @@ public class Parser {
 	}
 
 	private void RELATIONAL_EXPRESSION2() {
-		token = scanner.nextToken();
+		// token = scanner.nextToken();
 
 		if(!isBOOLEAN_OPERATOR()){
 			return;
@@ -271,6 +271,7 @@ public class Parser {
 
 		this.ARITHMETIC_EXPRESSION();
 		this.RELATIONAL_OPERATOR();
+		token = scanner.nextToken();
 		this.ARITHMETIC_EXPRESSION();
 	}
 

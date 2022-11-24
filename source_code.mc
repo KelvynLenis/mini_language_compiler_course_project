@@ -1,5 +1,8 @@
 begin 
 int a;
 do
-a = a + b;
+print a;
+a = b;
+if a > b then print a; else print b;
+while x > a print c;
 end
