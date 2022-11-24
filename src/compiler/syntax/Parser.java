@@ -17,25 +17,22 @@ public class Parser {
 
 	public void PROGRAMA(){
 		token = scanner.nextToken();
-		if(token.getContent().equals("begin")){
-			this.DECLARACOES();
-			
-			this.ALGORITMO();
-			
-			token = scanner.nextToken();
-			if(!token.getContent().equals("end")){
-				throw new SyntaxException("ALGORITMO was never closed! Expected keyword end");
-			}
+		if(!token.getContent().equals("begin")){
+			throw new SyntaxException("Expected keyword begin!");
 		}
+
+		this.DECLARACOES();
+		this.ALGORITMO();
 	}
 
 	private void DECLARACOES(){
-		this.DECLARATION_lIST();
-	}
-
-	private void DECLARATION_lIST(){
-		this.DECLARATION();
 		token = scanner.nextToken();
+
+		if(token.getContent().equals("do")){
+			throw new SyntaxException("You must define at least one variable!");
+		}
+
+		this.DECLARATION();
 
 		if(token.getContent().equals("do")){
 			return;
@@ -43,8 +40,19 @@ public class Parser {
 		this.DECLARATION_lIST();
 	}
 
-	private void DECLARATION(){
+	private void DECLARATION_lIST(){
 		token = scanner.nextToken();
+
+		if(token.getContent().equals("do")){
+			return;
+		}
+
+		this.DECLARATION();
+
+		this.DECLARATION_lIST();
+	}
+
+	private void DECLARATION(){
 
 		if(token.getType() != TokenType.RESERVED_WORD && !reservedWordsTypes.getType(token.getContent()).equals("varType")){
 			throw new SyntaxException("Variable Type expected, found "+
@@ -61,7 +69,7 @@ public class Parser {
 		}
 
 		token = scanner.nextToken();
-		if(!token.getContent().equals(";")){
+		if(token.getType() != TokenType.BREAK_LINE){
 			throw new SyntaxException("expected ; at the end of the line, found "+
 			token.getType() + " ("+token.getContent()+")  at LINE " +
 			token.getLine() + " and COLUMN "+ token.getColumn());
@@ -69,95 +77,192 @@ public class Parser {
 	}
 
 	private void ALGORITMO(){
+		token = scanner.nextToken();
+
+		if(token.getContent().equals("end")){
+			throw new SyntaxException("You must define at least one command!");
+		}
+
+		this.COMMAND();
+
+		if(token.getContent().equals("end")){
+			return;
+		}
+
 		this.COMMAND_LIST();
 	}
 
 	private void COMMAND_LIST(){
+		token = scanner.nextToken();
+
+		if(token.getContent().equals("end")){
+			return;
+		}
+
 		this.COMMAND();
+		this.COMMAND_LIST();
 	}
 
 	private void 	COMMAND(){
-		this.ASSIGN_COMMAND();
-		this.OUTPUT_COMMAND();
-		this.CONDITION_COMMAND();
-		this.LOOP_COMMAND();
+		// token = scanner.nextToken();
+		
+		if(token.getType() == TokenType.IDENTIFIER){
+			this.ASSIGN_COMMAND();
+		}
+		else if(token.getContent().equals("print")){
+			this.OUTPUT_COMMAND();
+		}
+		else if(token.getContent().equals("if")){
+			this.CONDITION_COMMAND();
+		}
+		else if(token.getContent().equals("while")){
+			this.LOOP_COMMAND();
+		}
 	}
 
 	private void ASSIGN_COMMAND() {
 		// TODO
-		// 'VARIAVEL' =
+		token = scanner.nextToken();
+		if(!token.getContent().equals("=")){
+			throw new SyntaxException("expected '=' but instead found "+
+			token.getType() + " ("+token.getContent()+")  at LINE " +
+			token.getLine() + " and COLUMN "+ token.getColumn());
+		}
 		this.ARITHMETIC_EXPRESSION();
+
+		token = scanner.nextToken();
+		if(token.getType() != TokenType.BREAK_LINE){
+			throw new SyntaxException("expected ; at the end of the line, found "+
+			token.getType() + " ("+token.getContent()+")  at LINE " +
+			token.getLine() + " and COLUMN "+ token.getColumn());
+		}
 	}
 
 	private void OUTPUT_COMMAND() {
 		// TODO
 		// 'PRINT' (VARIAVEL | CADEIA)
+		token = scanner.nextToken();
+		if(token.getType() != TokenType.IDENTIFIER){
+			throw new SyntaxException("expected a variable but found "+
+			token.getType() + " ("+token.getContent()+")  at LINE " +
+			token.getLine() + " and COLUMN "+ token.getColumn());
+		}
+
+		token = scanner.nextToken();
+		if(token.getType() != TokenType.BREAK_LINE){
+			throw new SyntaxException("expected ; at the end of the line, found "+
+			token.getType() + " ("+token.getContent()+")  at LINE " +
+			token.getLine() + " and COLUMN "+ token.getColumn());
+		}
 	}
 
 	private void CONDITION_COMMAND() {
-		// TODO
-		// IF
+		
 		this.RELATIONAL_EXPRESSION();
-		// THEN
+
+		if(!token.getContent().equals("then")){
+			throw new SyntaxException("expected keyword 'then' but found "+
+			token.getType() + " ("+token.getContent()+")  at LINE " +
+			token.getLine() + " and COLUMN "+ token.getColumn());
+		}
+		
+		
+		token = scanner.nextToken();
 		this.COMMAND();
-		// ELSE
+		this.CONDITION_COMMAND2();
+	}
+
+	private void CONDITION_COMMAND2(){
+		// token = scanner.nextToken();
+
+		if(token.getType() == TokenType.BREAK_LINE){
+			return;
+		}
+
+		if(!token.getContent().equals("else")){
+			throw new SyntaxException("expected ; at the end of the line, found "+
+			token.getType() + " ("+token.getContent()+")  at LINE " +
+			token.getLine() + " and COLUMN "+ token.getColumn());
+		}
+		
 		this.COMMAND();
 	}
 
 	private void LOOP_COMMAND() {
-		// TODO
-		// WHILE
 		this.RELATIONAL_EXPRESSION();
 		this.COMMAND();
 	}
 
 	private void ARITHMETIC_EXPRESSION() {
 		// TODO
-
 	}
 
 	private void RELATIONAL_EXPRESSION() {
 		// TODO
 		this.RELATIONAL_TERM();
+		this.RELATIONAL_EXPRESSION2();
+	}
+
+	private void RELATIONAL_EXPRESSION2() {
+		token = scanner.nextToken();
+
+		if(!isBOOLEAN_OPERATOR()){
+			return;
+		}
+
+		this.RELATIONAL_TERM();
+		this.RELATIONAL_EXPRESSION2();
 	}
 
 	private void RELATIONAL_TERM(){
 		// TODO
+		token = scanner.nextToken();
+
+		if(token.getType() == TokenType.OPEN_PARENTHESIS){
+			this.RELATIONAL_EXPRESSION();
+			if(token.getType() == TokenType.CLOSE_PARENTHESIS){
+				return;
+			} else {
+				throw new SyntaxException("expected ')' but found "+
+				token.getType() + " ("+token.getContent()+")  at LINE " +
+				token.getLine() + " and COLUMN "+ token.getColumn());
+			}
+		}
+
+		this.ARITHMETIC_EXPRESSION();
+		this.RELATIONAL_OPERATOR();
 		this.ARITHMETIC_EXPRESSION();
 	}
 
-	//////////////////////////////////////
-	
-	public void E() {
-		this.T();
-		this.El();
-	}
-	
-	private void T() {
-		token = scanner.nextToken();
-		if(token.getType() != TokenType.IDENTIFIER && 
-				token.getType() != TokenType.NUMBER) {
-			throw new SyntaxException("Identifier or Number expected, found "+token.getType()+ 
-					" ("+token.getContent()+")  at LINE " +
-					token.getLine()+ " and COLUMN "+ token.getColumn());
+	private void RELATIONAL_OPERATOR(){
+		// token = scanner.nextToken();
+
+		if(token.getType() != TokenType.RELATIONAL) {
+			throw new SyntaxException("expected a relational operator but found "+
+			token.getType() + " ("+token.getContent()+")  at LINE " +
+			token.getLine() + " and COLUMN "+ token.getColumn());
 		}
 	}
-	
-	private void El() {
-		token = scanner.nextToken();
-		if(token != null) {
-			this.OP();
-			this.T();
-			this.El();
-		}
+
+	private boolean isBOOLEAN_OPERATOR(){
+		// token = scanner.nextToken();
+
+		if(!token.getContent().equals("and") || 
+			 !token.getContent().equals("or")) {
+				return false;
+			 }
+
+		// if(!token.getContent().equals("and") || 
+		// 	 !token.getContent().equals("or")) {
+		// 	throw new SyntaxException("expected ; at the end of the line, found "+
+		// 	token.getType() + " ("+token.getContent()+")  at LINE " +
+		// 	token.getLine() + " and COLUMN "+ token.getColumn());
+		// }
+
+		return true;
 	}
-	
-	private void OP() {
-		if(token.getType() != TokenType.MATH) {
-			throw new SyntaxException("Operator expected, found "+token.getType()+" ("+token.getContent()+") at LINE "+
-					token.getLine()+" and COLUMN "+ token.getColumn());
-		}
-	}
+
+
 }
 
 

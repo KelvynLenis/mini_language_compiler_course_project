@@ -105,11 +105,12 @@ public class Scanner {
 					}
 					else if(isAssign(currentChar)){
 						content += currentChar;
-						tk = new Token(TokenType.ASSIGN, content);
-						if(debug_mode) {
-							System.out.println(tk);
-						}
-						return tk;
+						state = "relational";
+						// tk = new Token(TokenType.ASSIGN, content);
+						// if(debug_mode) {
+						// 	System.out.println(tk);
+						// }
+						// return tk;
 					}
 					else if(isOperator(currentChar)){
 						content += currentChar;
@@ -128,7 +129,6 @@ public class Scanner {
 						content += currentChar;
 					}
 					else if(isBreakLine(currentChar)){
-						content += currentChar;
 						tk = new Token(TokenType.IDENTIFIER, content);
 						back();
 						if(debug_mode) {
@@ -394,6 +394,14 @@ public class Scanner {
 					if (isAssign(currentChar)){
 						content += currentChar;
 						tk = new Token(TokenType.RELATIONAL, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
+						return tk;
+					}
+					else if(content.equals("=") && !isAssign(currentChar)){
+						tk = new Token(TokenType.ASSIGN, content);
+						back();
 						if(debug_mode) {
 							System.out.println(tk);
 						}

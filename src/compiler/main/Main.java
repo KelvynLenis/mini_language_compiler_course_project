@@ -25,13 +25,5 @@ public class Main {
 			System.out.println("Generic Error!!");
 			System.out.println(err.getClass().getName());
 		}
-
-
-		// do {
-		// 	token = scanner.nextToken();
-		// 	if(token != null && token.getType() != TokenType.COMMENTARY) {
-		// 		System.out.println(token);				
-		// 	}
-		// } while (token != null);
 	}
 }

@@ -11,6 +11,12 @@ public class ReservedWordsType {
     this.types.put("print", "command");
     this.types.put("if", "command");
     this.types.put("else", "command");
+    this.types.put("begin", "command");
+    this.types.put("do", "command");
+    this.types.put("end", "command");
+    this.types.put("while", "command");
+    this.types.put("and", "command");
+    this.types.put("or", "command");
   }
 
   public String getType(String reservedWord) {

@@ -40,26 +40,6 @@ fatorAritmetico :
 +++++++++++++++++++++++++ Rogério +++++++++++++++++++++++++++++++++
 
 =========================================================================
-expressaoRelacional : 
-	expressaoRelacional operadorBooleano 			termoRelacional | 
-	termoRelacional;
-
-------------------------
-#elimimando recursividade
-
-expressaoRelacional:
-	termoRelacional expressaoRelacional2;
-
-expressaoRelacional2:
-	operadorBooleano termoRelacional expressaoRelacional2 | VAZIO
-
--------------------------
-
-termoRelacional : 
-	expressaoAritmetica OP_REL expressaoAritmetica |
-	'(' expressaoRelacional ')';
-operadorBooleano : 
-	'AND' | 'OR';
 
 listaComandos : 
 	comando listaComandos | comando;
@@ -72,11 +52,31 @@ comando :
 
 comandoAtribuicao : 
 	VARIAVEL '=' expressaoAritmetica;
+	
 comandoSaida : 
-	'PRINT'  (VARIAVEL | CADEIA);
-comandoCondicao : 
-	'IF' expressaoRelacional 'THEN' comando | 
-	'IF' expressaoRelacional 'THEN' comando 'ELSE' 		comando;
-comandoRepeticao : 'WHILE' expressaoRelacional comando;
+	'print'  (VARIAVEL | CADEIA);
+
+comandoCondicao:
+	'if' expressaoRelacional 'then' comando comandoCondicao2;
+comandoCondicao2:
+	'else' comando | VAZIO
+
+comandoRepeticao : 'while' expressaoRelacional comando;
+
+expressaoRelacional:
+	termoRelacional expressaoRelacional2;
+
+expressaoRelacional2:
+	operadorBooleano termoRelacional expressaoRelacional2 | VAZIO
+
+termoRelacional : 
+	expressaoAritmetica operadorRelacional expressaoAritmetica |
+	'(' expressaoRelacional ')'
+
+operadorBooleano : 
+	'and' | 'or'
+
+operadorRelacional:
+	'>' | '<' | '>=' | '<=' | '==' | '!='
 
 =========================================================================
