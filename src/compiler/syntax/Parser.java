@@ -202,7 +202,7 @@ public class Parser {
 
 	private void ARITHMETIC_EXPRESSION2(){
 		token = scanner.nextToken();
-		if (token != null){
+		if (token.getType() != TokenType.BREAK_LINE && !token.getContent().equals("end")){
 			this.ARITHMETIC_EXPRESSION3();
 			this.ARITHMETIC_EXPRESSION2();
 		}
@@ -237,17 +237,20 @@ public class Parser {
 
 	private void ARITHMETIC_TERM2(){
 		token = scanner.nextToken();
-		if(token != null) {
-			if(token.getContent().equals("*") ||
-			   token.getContent().equals("/")){
-				this.ARITHMETIC_FACTOR();
-				this.ARITHMETIC_TERM2();
-			}
-			else{
-				throw new SyntaxException("* or / expected, found"+token.getType()+ 
-				" ("+token.getContent()+")  at LINE " +
-				token.getLine()+ " and COLUMN "+ token.getColumn());
-			}
+
+		if(token.getType() == TokenType.BREAK_LINE) {
+			return;
+		}
+
+		if(token.getContent().equals("*") ||
+				token.getContent().equals("/")){
+			this.ARITHMETIC_FACTOR();
+			this.ARITHMETIC_TERM2();
+		}
+		else{
+			throw new SyntaxException("* or / expected, found"+token.getType()+ 
+			" ("+token.getContent()+")  at LINE " +
+			token.getLine()+ " and COLUMN "+ token.getColumn());
 		}
 	}
 

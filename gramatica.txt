@@ -20,8 +20,8 @@ expressaoAritmetica :
 --------------------------------------------------
 #Fatorando à esquerda e eliminando recursividade à esquerda
 expressaoAritmetica:
-	termoAritmetico expressaoAritmetica2
-expressaoAritmetica2:
+	termoAritmetico expressaoAritmetica2;
+expressaoAritmetica2: 
 	expressaoAritmetica3 expressaoAritmetica2 |
 	VAZIO
 expressaoAritmetica3:
@@ -95,3 +95,30 @@ operadorRelacional:
 	'>' | '<' | '>=' | '<=' | '==' | '!='
 
 =========================================================================
+
+
+
+
+
+
+
+#Fatorando à esquerda e eliminando recursividade à esquerda
+expressaoAritmetica:
+	fatorAritmetico expressaoAritmetica2;
+expressaoAritmetica2: 
+	'+' fatorAritmetico expressaoAritmetica2 |
+	'-' fatorAritmetico expressaoAritmetica2 |
+	'*' fatorAritmetico expressaoAritmetica2 |
+	'/' fatorAritmetico expressaoAritmetica2 |
+	VAZIO
+
+fatorAritmetico : 
+	NUMINT | NUMREAL | VARIAVEL |
+	'(' expressaoAritmetica ')'
+
+
+	expressaoAritmetica3:
+	'+' fatorAritmetico |
+	'-' fatorAritmetico |
+	'*' fatorAritmetico |
+	'/' fatorAritmetico |
