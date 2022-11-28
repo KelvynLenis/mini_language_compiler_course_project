@@ -1,65 +1,91 @@
+Correções 
+1) declaracoes in-line
+2) precedencia de operadores
+3) operadores booleanos/relacionais
+
 =========================================================================
 
 programa : 
-	'begin' 'DECLARACOES' listaDeclaracoes
-	'do' 'ALGORITMO' listaComandos 'end'
-listaDeclaracoes : 
-	declaracao listaDeclaracoes | declaracao;
-declaracao : 
-	tipoVar VARIAVEL;
-tipoVar : 
+	'begin' declarationList
+	'do' commandList 'end'
+
+declarationList : 
+	declaration declarationList | declaration;
+
+declaration : 
+	varType VARIAVEL;
+
+varType : 
 	'int' | 'float';
 
-expressaoAritmetica:
-	fatorAritmetico expressaoAritmetica2
+commandList : 
+	command commandList | command;
 
-expressaoAritmetica2:
-	'+' fatorAritmetico expressaoAritmetica2 |
-	'-' fatorAritmetico expressaoAritmetica2 |
-	'*' fatorAritmetico expressaoAritmetica2 |
-	'/' fatorAritmetico expressaoAritmetica2 |
+command : 
+	assignCommand | 
+	outputCommand | 
+	conditionCommand | 
+	loopCommand
+
+assignCommand : 
+	VARIAVEL '=' arithmeticExpression;
+	
+outputCommand : 
+	'print'  VARIAVEL; | (cadeia);
+
+cadeia:
+	QUALQUER_IDENTIFICADOR
+
+conditionCommand:
+	'if' relationalExpression 'then' command conditionCommand2;
+
+conditionCommand2:
+	'else' command | VAZIO
+
+loopCommand : 'while' relationalExpression command;
+
+arithmeticExpression:
+	arithmeticTerm arithmeticExpression2
+
+arithmeticExpression2:
+	arithmeticExpression3 arithmeticExpression2 |
 	VAZIO
 
-fatorAritmetico :
+arithmeticExpression3:
+	'+' arithmeticTerm |
+	'-' arithmeticTerm 
+
+arithmeticTerm : 
+	arithmeticTerm '*' arithmeticFactor |
+	arithmeticTerm '/' arithmeticFactor |
+	arithmeticFactor;
+
+arithmeticTerm : 
+	arithmeticFactor arithmeticTerm2;
+
+arithmeticTerm2: 
+	'*' arithmeticFactor arithmeticTerm2 |
+	'/' arithmeticFactor arithmeticTerm2 |
+	VAZIO;
+
+arithmeticFactor :
 	NUMINT | NUMREAL | VARIAVEL |
-	'(' expressaoAritmetica ')'
+	'(' arithmeticExpression ')'
 
-listaComandos : 
-	comando listaComandos | comando;
+relationalExpression:
+	relationalTerm relationalExpression2;
 
-comando : 
-	comandoAtribuicao | 
-	comandoSaida | 
-	comandoCondicao | 
-	comandoRepeticao;
+relationalExpression2:
+	booleanOperator relationalTerm relationalExpression2 | VAZIO
 
-comandoAtribuicao : 
-	VARIAVEL '=' expressaoAritmetica;
-	
-comandoSaida : 
-	'print'  (VARIAVEL | CADEIA);
+relationalTerm : 
+	arithmeticExpression relationalOperator arithmeticExpression |
+	'(' relationalExpression ')'
 
-comandoCondicao:
-	'if' expressaoRelacional 'then' comando comandoCondicao2;
-comandoCondicao2:
-	'else' comando | VAZIO
-
-comandoRepeticao : 'while' expressaoRelacional comando;
-
-expressaoRelacional:
-	termoRelacional expressaoRelacional2;
-
-expressaoRelacional2:
-	operadorBooleano termoRelacional expressaoRelacional2 | VAZIO
-
-termoRelacional : 
-	expressaoAritmetica operadorRelacional expressaoAritmetica |
-	'(' expressaoRelacional ')'
-
-operadorBooleano : 
+booleanOperator : 
 	'and' | 'or'
 
-operadorRelacional:
+relationalOperator:
 	'>' | '<' | '>=' | '<=' | '==' | '!='
 
 =========================================================================

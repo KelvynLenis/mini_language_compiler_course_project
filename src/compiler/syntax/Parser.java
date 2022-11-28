@@ -104,7 +104,6 @@ public class Parser {
 	}
 
 	private void 	COMMAND(){
-		// token = scanner.nextToken();
 		
 		if(token.getType() == TokenType.IDENTIFIER){
 			this.ASSIGN_COMMAND();
@@ -121,7 +120,6 @@ public class Parser {
 	}
 
 	private void ASSIGN_COMMAND() {
-		// TODO
 		token = scanner.nextToken();
 		if(!token.getContent().equals("=")){
 			throw new SyntaxException("expected '=' but instead found "+
@@ -131,20 +129,16 @@ public class Parser {
 		
 		token = scanner.nextToken();
 		this.ARITHMETIC_EXPRESSION();
-
-		// token = scanner.nextToken();
-		// if(token.getType() != TokenType.BREAK_LINE){
-		// 	throw new SyntaxException("expected ; at the end of the line, found "+
-		// 	token.getType() + " ("+token.getContent()+")  at LINE " +
-		// 	token.getLine() + " and COLUMN "+ token.getColumn());
-		// }
 	}
 
 	private void OUTPUT_COMMAND() {
-		// TODO
-		// 'PRINT' (VARIAVEL | CADEIA)
 		token = scanner.nextToken();
-		if(token.getType() != TokenType.IDENTIFIER){
+		
+		if(token.getType() == TokenType.OPEN_PARENTHESIS){
+			this.STRING();
+			return;
+		}
+		else if(token.getType() != TokenType.IDENTIFIER){
 			throw new SyntaxException("expected a variable but found "+
 			token.getType() + " ("+token.getContent()+")  at LINE " +
 			token.getLine() + " and COLUMN "+ token.getColumn());
@@ -155,6 +149,17 @@ public class Parser {
 			throw new SyntaxException("expected ; at the end of the line, found "+
 			token.getType() + " ("+token.getContent()+")  at LINE " +
 			token.getLine() + " and COLUMN "+ token.getColumn());
+		}
+	}
+
+	private void STRING(){
+		token = scanner.nextToken();
+		while(token.getType() != TokenType.CLOSE_PARENTHESIS){
+			token = scanner.nextToken();
+		}
+
+		if(token.getType() == TokenType.BREAK_LINE){
+			return;
 		}
 	}
 
@@ -175,7 +180,6 @@ public class Parser {
 	}
 
 	private void CONDITION_COMMAND2(){
-		// token = scanner.nextToken();
 
 		if(token.getType() == TokenType.BREAK_LINE){
 			return;
@@ -196,26 +200,78 @@ public class Parser {
 	}
 
 	private void ARITHMETIC_EXPRESSION(){
-		this.ARITHMETIC_FACTOR();
+		this.ARITHMETIC_TERM();
 		this.ARITHMETIC_EXPRESSION2();		
 	}
 
 	private void ARITHMETIC_EXPRESSION2(){
 		token = scanner.nextToken();
-
-		if (!token.getContent().equals(";") ||
-			!token.getContent().equals(")"))
-			return;
-
-		if (token.getType() == TokenType.MATH){
-			
-			this.ARITHMETIC_FACTOR();
+		if (token != null){
+			this.ARITHMETIC_EXPRESSION3();
 			this.ARITHMETIC_EXPRESSION2();
-		}	
+		}
 	}
 
+	private void ARITHMETIC_EXPRESSION3(){
+		if(token.getContent() == "+" ||
+		   token.getContent() == "-"){
+			this.ARITHMETIC_TERM();
+		}
+	}
+
+	private void ARITHMETIC_TERM() {
+		this.ARITHMETIC_FACTOR();
+		this.ARITHMETIC_TERM2();
+	}
+
+	private void ARITHMETIC_TERM2(){
+		token = scanner.nextToken();
+		if(token != null) {
+			if(token.getContent() == "*" ||
+			   token.getContent() == "/"){
+				this.ARITHMETIC_FACTOR();
+				this.ARITHMETIC_TERM2();
+			}
+			else{
+				throw new SyntaxException("* or / expected, found"+token.getType()+ 
+				" ("+token.getContent()+")  at LINE " +
+				token.getLine()+ " and COLUMN "+ token.getColumn());
+			}
+		}
+	}
+
+	// private void ARITHMETIC_EXPRESSION(){
+	// 	this.ARITHMETIC_FACTOR();
+	// 	this.ARITHMETIC_EXPRESSION2();		
+	// }
+
+	// private void ARITHMETIC_EXPRESSION2(){
+	// 	token = scanner.nextToken();
+
+	// 	if (token.getContent().equals(";") ||
+	// 			token.getContent().equals(")") ||
+	// 			token.getType() == TokenType.RELATIONAL ||
+	// 			token.getContent().equals("then") ||
+	// 			token.getContent().equals("print") ||
+	// 			token.getType() == TokenType.IDENTIFIER
+	// 		){
+	// 			return;
+	// 	}
+	// 	else if (token.getType() == TokenType.MATH){
+			
+	// 		token = scanner.nextToken();
+	// 		this.ARITHMETIC_FACTOR();
+	// 		this.ARITHMETIC_EXPRESSION2();
+	// 	}	
+	// 	else {
+	// 		throw new SyntaxException("expected ; at the end of the line, found "+
+	// 		token.getType() + " ("+token.getContent()+")  at LINE " +
+	// 		token.getLine() + " and COLUMN "+ token.getColumn());
+
+	// 	}
+	// }
+
 	private void ARITHMETIC_FACTOR(){
-		// token = scanner.nextToken();
 
 		if (token.getType() != TokenType.NUMBER &&
 			token.getType() != TokenType.FLOAT &&
@@ -238,13 +294,11 @@ public class Parser {
 	}
 
 	private void RELATIONAL_EXPRESSION() {
-		// TODO
 		this.RELATIONAL_TERM();
 		this.RELATIONAL_EXPRESSION2();
 	}
 
 	private void RELATIONAL_EXPRESSION2() {
-		// token = scanner.nextToken();
 
 		if(!isBOOLEAN_OPERATOR()){
 			return;
@@ -255,7 +309,6 @@ public class Parser {
 	}
 
 	private void RELATIONAL_TERM(){
-		// TODO
 		token = scanner.nextToken();
 
 		if(token.getType() == TokenType.OPEN_PARENTHESIS){
@@ -276,7 +329,6 @@ public class Parser {
 	}
 
 	private void RELATIONAL_OPERATOR(){
-		// token = scanner.nextToken();
 
 		if(token.getType() != TokenType.RELATIONAL) {
 			throw new SyntaxException("expected a relational operator but found "+
@@ -286,24 +338,13 @@ public class Parser {
 	}
 
 	private boolean isBOOLEAN_OPERATOR(){
-		// token = scanner.nextToken();
 
 		if(!token.getContent().equals("and") || 
 			 !token.getContent().equals("or")) {
-				return false;
-			 }
-
-		// if(!token.getContent().equals("and") || 
-		// 	 !token.getContent().equals("or")) {
-		// 	throw new SyntaxException("expected ; at the end of the line, found "+
-		// 	token.getType() + " ("+token.getContent()+")  at LINE " +
-		// 	token.getLine() + " and COLUMN "+ token.getColumn());
-		// }
-
+			return false;
+		}
 		return true;
 	}
-
-
 }
 
 
