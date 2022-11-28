@@ -70,7 +70,7 @@ public class Parser {
 
 		token = scanner.nextToken();
 		if(token.getType() != TokenType.BREAK_LINE){
-			throw new SyntaxException("expected ; at the end of the line, found "+
+			throw new SyntaxException("expected semicolon(;) at the end of the line, found "+
 			token.getType() + " ("+token.getContent()+")  at LINE " +
 			token.getLine() + " and COLUMN "+ token.getColumn());
 		}
@@ -146,7 +146,7 @@ public class Parser {
 
 		token = scanner.nextToken();
 		if(token.getType() != TokenType.BREAK_LINE){
-			throw new SyntaxException("expected ; at the end of the line, found "+
+			throw new SyntaxException("expected semicolon(;) at the end of the line, found "+
 			token.getType() + " ("+token.getContent()+")  at LINE " +
 			token.getLine() + " and COLUMN "+ token.getColumn());
 		}
@@ -173,7 +173,6 @@ public class Parser {
 			token.getLine() + " and COLUMN "+ token.getColumn());
 		}
 		
-		
 		token = scanner.nextToken();
 		this.COMMAND();
 		this.CONDITION_COMMAND2();
@@ -186,7 +185,7 @@ public class Parser {
 		}
 
 		if(!token.getContent().equals("else")){
-			throw new SyntaxException("expected ; at the end of the line, found "+
+			throw new SyntaxException("expected semicolon(;) at the end of the line, found "+
 			token.getType() + " ("+token.getContent()+")  at LINE " +
 			token.getLine() + " and COLUMN "+ token.getColumn());
 		}
@@ -195,28 +194,43 @@ public class Parser {
 	}
 
 	private void LOOP_COMMAND() {
+		// token = scanner.nextToken();
+		// if(token.getType() != TokenType.COLON){
+		// 	throw new SyntaxException("Colon(:) expected but found "+token.getType()+ 
+		// 	" ("+token.getContent()+")  at LINE " +
+		// 	token.getLine()+ " and COLUMN "+ token.getColumn());
+		// }
 		this.RELATIONAL_EXPRESSION();
+		token = scanner.nextToken();
 		this.COMMAND();
 	}
 
 	private void ARITHMETIC_EXPRESSION(){
+		if(token.getType() == TokenType.BREAK_LINE ||
+			token.getType() == TokenType.RELATIONAL ||
+			token.getContent().equals("then")){
+			return;
+		}
 		this.ARITHMETIC_TERM();
-		this.ARITHMETIC_EXPRESSION2();		
+		this.ARITHMETIC_EXPRESSION2();
 	}
 
 	private void ARITHMETIC_EXPRESSION2(){
-		token = scanner.nextToken();
-		if (token != null){
-			this.ARITHMETIC_EXPRESSION3();
-			this.ARITHMETIC_EXPRESSION2();
+		if(token.getType() == TokenType.BREAK_LINE ||
+			token.getType() == TokenType.RELATIONAL ||
+			token.getType() == TokenType.COLON ||
+			isBOOLEAN_OPERATOR() ||
+			token.getContent().equals("then") ||
+			token.getContent().equals("print")){
+			return;
 		}
-	}
-
-	private void ARITHMETIC_EXPRESSION3(){
-		if(token.getContent() == "+" ||
-		   token.getContent() == "-"){
+		if(token.getContent().equals("+") ||
+		   token.getContent().equals("-")
+			){
+			token = scanner.nextToken();
 			this.ARITHMETIC_TERM();
 		}
+		this.ARITHMETIC_EXPRESSION2();
 	}
 
 	private void ARITHMETIC_TERM() {
@@ -226,16 +240,51 @@ public class Parser {
 
 	private void ARITHMETIC_TERM2(){
 		token = scanner.nextToken();
-		if(token != null) {
-			if(token.getContent() == "*" ||
-			   token.getContent() == "/"){
-				this.ARITHMETIC_FACTOR();
-				this.ARITHMETIC_TERM2();
-			}
-			else{
-				throw new SyntaxException("* or / expected, found"+token.getType()+ 
-				" ("+token.getContent()+")  at LINE " +
-				token.getLine()+ " and COLUMN "+ token.getColumn());
+
+		if(token.getContent().equals("+") ||
+			 token.getContent().equals("-")
+			){
+			return;
+		}
+
+		if(token.getContent().equals("*") ||
+			 token.getContent().equals("/")){
+			this.ARITHMETIC_FACTOR();
+			this.ARITHMETIC_TERM2();
+		}
+		else if(token.getType() == TokenType.BREAK_LINE ||
+						token.getType() == TokenType.RELATIONAL ||
+						token.getType() == TokenType.COLON ||
+						isBOOLEAN_OPERATOR() ||
+						token.getContent().equals("then") ||
+						token.getContent().equals("print")){
+			return;
+		}
+		else{
+			throw new SyntaxException("Math operator expected but found "+token.getType()+ 
+			" ("+token.getContent()+")  at LINE " +
+			token.getLine()+ " and COLUMN "+ token.getColumn());
+		}
+	}
+
+	private void ARITHMETIC_FACTOR(){
+
+		if (token.getType() != TokenType.NUMBER &&
+			token.getType() != TokenType.FLOAT &&
+			token.getType() != TokenType.IDENTIFIER &&
+			token.getType() != TokenType.OPEN_PARENTHESIS){
+				throw new SyntaxException("Identifier or Integer or Float or Open Parenthesis expected, found "+token.getType()+ 
+					" ("+token.getContent()+")  at LINE " +
+					token.getLine()+ " and COLUMN "+ token.getColumn());
+		}
+
+		if (token.getType() == TokenType.OPEN_PARENTHESIS){
+			this.ARITHMETIC_EXPRESSION();
+			token = scanner.nextToken();
+			if (token.getType() != TokenType.CLOSE_PARENTHESIS){
+				throw new SyntaxException("Close parenthesis expected, found "+token.getType()+ 
+					" ("+token.getContent()+")  at LINE " +
+					token.getLine()+ " and COLUMN "+ token.getColumn());
 			}
 		}
 	}
@@ -264,34 +313,12 @@ public class Parser {
 	// 		this.ARITHMETIC_EXPRESSION2();
 	// 	}	
 	// 	else {
-	// 		throw new SyntaxException("expected ; at the end of the line, found "+
+	// 		throw new SyntaxException("expected semicolon(;) at the end of the line, found "+
 	// 		token.getType() + " ("+token.getContent()+")  at LINE " +
 	// 		token.getLine() + " and COLUMN "+ token.getColumn());
 
 	// 	}
 	// }
-
-	private void ARITHMETIC_FACTOR(){
-
-		if (token.getType() != TokenType.NUMBER &&
-			token.getType() != TokenType.FLOAT &&
-			token.getType() != TokenType.IDENTIFIER &&
-			token.getType() != TokenType.OPEN_PARENTHESIS){
-				throw new SyntaxException("Identifier or Integer or Float or Open Parenthesis expected, found "+token.getType()+ 
-					" ("+token.getContent()+")  at LINE " +
-					token.getLine()+ " and COLUMN "+ token.getColumn());
-		}
-
-		if (token.getType() == TokenType.OPEN_PARENTHESIS){
-			this.ARITHMETIC_EXPRESSION();
-			token = scanner.nextToken();
-			if (token.getType() != TokenType.CLOSE_PARENTHESIS){
-				throw new SyntaxException("Close parenthesis expected, found "+token.getType()+ 
-					" ("+token.getContent()+")  at LINE " +
-					token.getLine()+ " and COLUMN "+ token.getColumn());
-			}
-		}
-	}
 
 	private void RELATIONAL_EXPRESSION() {
 		this.RELATIONAL_TERM();
@@ -300,10 +327,12 @@ public class Parser {
 
 	private void RELATIONAL_EXPRESSION2() {
 
-		if(!isBOOLEAN_OPERATOR()){
+		
+		if(token.getContent().equals("then") ||
+			 token.getType() == TokenType.COLON
+		){
 			return;
 		}
-
 		this.RELATIONAL_TERM();
 		this.RELATIONAL_EXPRESSION2();
 	}
@@ -339,11 +368,11 @@ public class Parser {
 
 	private boolean isBOOLEAN_OPERATOR(){
 
-		if(!token.getContent().equals("and") || 
-			 !token.getContent().equals("or")) {
-			return false;
+		if(token.getContent().equals("and") || 
+			 token.getContent().equals("or")) {
+			return true;
 		}
-		return true;
+		return false;
 	}
 }
 

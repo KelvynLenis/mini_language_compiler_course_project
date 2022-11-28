@@ -65,6 +65,14 @@ public class Scanner {
 						}
 						return tk;
 					}
+					else if(currentChar == ':'){
+						content += currentChar;
+						tk = new Token(TokenType.COLON, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
+						return tk;
+					}
 					else if(currentChar == '.'){
 						content += "0.";
 						state = "float";
@@ -134,6 +142,14 @@ public class Scanner {
 						if(debug_mode) {
 							System.out.println(tk);
 						}
+						return tk;
+					}
+					else if(currentChar == ':'){
+						tk = new Token(TokenType.IDENTIFIER, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
+						back();
 						return tk;
 					}
 					else if (isMathOperator(currentChar)){
@@ -257,6 +273,14 @@ public class Scanner {
 						if(debug_mode) {
 							System.out.println(tk);
 						}
+						return tk;
+					}
+					else if(currentChar == ':'){
+						tk = new Token(TokenType.NUMBER, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
+						back();
 						return tk;
 					}
 					else if (isMathOperator(currentChar)){
@@ -405,6 +429,14 @@ public class Scanner {
 						if(debug_mode) {
 							System.out.println(tk);
 						}
+						return tk;
+					}
+					else if(currentChar == ':'){
+						tk = new Token(TokenType.RELATIONAL, content);
+						if(debug_mode) {
+							System.out.println(tk);
+						}
+						back();
 						return tk;
 					}
 					else if(isCommentary(currentChar)){
