@@ -1,7 +1,7 @@
 Correções 
 1) declaracoes in-line
-2) precedencia de operadores
-3) operadores booleanos/relacionais
+2) precedencia de operadores matematicos
+3) consertar operadores booleanos/relacionais
 
 =========================================================================
 
