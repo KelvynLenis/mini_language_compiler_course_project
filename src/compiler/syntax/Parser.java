@@ -249,6 +249,7 @@ public class Parser {
 
 		if(token.getContent().equals("*") ||
 			 token.getContent().equals("/")){
+			token = scanner.nextToken();
 			this.ARITHMETIC_FACTOR();
 			this.ARITHMETIC_TERM2();
 		}
